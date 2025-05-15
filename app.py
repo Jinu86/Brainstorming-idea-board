@@ -57,8 +57,7 @@ if not st.session_state.topic:
         with st.spinner("초기 아이디어를 생성 중입니다..."):
             output = generate_ideas(prompt)
             if output:
-                for line in output.split("
-"):
+                for line in output.split("\n"):
                     if line.strip():
                         st.session_state.ideas.append({
                             "text": line.strip(),
@@ -77,7 +76,7 @@ else:
         cols = st.columns([8, 1, 1])
         with cols[0]:
             st.markdown(f"**{i+1}.** {idea['text']}")
-                    with cols[1]:
+        with cols[1]:
             if st.button("🗑️", key=f"remove_{i}"):
                 idx = st.session_state.ideas.index(idea)
                 st.session_state.ideas[idx]["removed"] = True
