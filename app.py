@@ -18,7 +18,7 @@ if "topic" not in st.session_state:
 # Gemini API 호출 함수
 def generate_ideas(prompt):
     try:
-        model = genai.GenerativeModel("models/gemini-1.5-pro")
+        model = genai.GenerativeModel("models/gemini-pro")
         response = model.generate_content(prompt)
         return response.text
     except Exception as e:
@@ -64,9 +64,8 @@ else:
         cols = st.columns([8, 1, 1])
         with cols[0]:
             st.markdown(f"**{i+1}.** {idea['text']}")
-            memo = st.text_area(f"메모_{i}", value=idea.get("memo", ""), label_visibility="collapsed")
-            idea["memo"] = memo
-        with cols[1]:
+            , label_visibility="collapsed")
+                    with cols[1]:
             if st.button("🗑️", key=f"remove_{i}"):
                 idx = st.session_state.ideas.index(idea)
                 st.session_state.ideas[idx]["removed"] = True
