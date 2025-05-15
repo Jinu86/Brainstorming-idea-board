@@ -18,7 +18,7 @@ if "topic" not in st.session_state:
 # Gemini API 호출 함수
 def generate_ideas(prompt):
     try:
-        model = genai.GenerativeModel("models/gemini-1.5-pro")
+        model = genai.GenerativeModel("models/gemini-pro")
         response = model.generate_content(prompt)
         return response.text
     except Exception as e:
@@ -65,7 +65,8 @@ if not st.session_state.topic:
                             "memo": "",
                             "liked": False
                         })
-        st.rerun()
+                st.success("✅ 새로운 아이디어가 추가되었습니다!")
+                st.rerun()
 else:
     st.subheader(f"🎯 주제: {st.session_state.topic}")
 
@@ -103,6 +104,7 @@ else:
                             "liked": False
                         })
                 st.success("✅ 새로운 아이디어가 추가되었습니다!")
+                st.rerun()
 
     # 4. 초기화 버튼
     if st.button("🔄 주제 초기화 및 새로 시작"):
