@@ -1,11 +1,9 @@
 import streamlit as st
 import google.generativeai as genai
-import os
-from dotenv import load_dotenv
 
-# 환경 변수 로드
-load_dotenv()
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+# Streamlit Cloud에서는 .env 대신 secrets 사용
+api_key = st.secrets["GOOGLE_API_KEY"]
+genai.configure(api_key=api_key)
 
 # 페이지 설정
 st.set_page_config(page_title="🧠 브레인스토밍 보드", layout="wide")
@@ -20,7 +18,7 @@ if "topic" not in st.session_state:
 # Gemini API 호출 함수
 def generate_ideas(prompt):
     try:
-        model = genai.GenerativeModel("gemini-1.5-pro")
+        model = genai.GenerativeModel("models/gemini-1.5-pro")
         response = model.generate_content(prompt)
         return response.text
     except Exception as e:
@@ -61,18 +59,22 @@ else:
 
     # 2. 아이디어 출력 및 상호작용
     st.markdown("---")
-    for i, idea in enumerate(st.session_state.ideas):
+    visible_ideas = [idea for idea in st.session_state.ideas if not idea.get("removed")]
+    for i, idea in enumerate(visible_ideas):
         cols = st.columns([8, 1, 1])
         with cols[0]:
             st.markdown(f"**{i+1}.** {idea['text']}")
             memo = st.text_area(f"메모_{i}", value=idea.get("memo", ""), label_visibility="collapsed")
-            st.session_state.ideas[i]["memo"] = memo
+            idea["memo"] = memo
         with cols[1]:
             if st.button("🗑️", key=f"remove_{i}"):
-                st.session_state.ideas[i]["removed"] = True
+                idx = st.session_state.ideas.index(idea)
+                st.session_state.ideas[idx]["removed"] = True
+                st.rerun()
         with cols[2]:
             if st.button("👍", key=f"like_{i}"):
-                st.session_state.ideas[i]["liked"] = True
+                idx = st.session_state.ideas.index(idea)
+                st.session_state.ideas[idx]["liked"] = True
 
     # 3. 아이디어 더 생성
     if st.button("아이디어 더 생성하기"):
