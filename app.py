@@ -53,6 +53,19 @@ if not st.session_state.topic:
     topic = st.text_input("아이디어를 생각하고 싶은 주제를 입력해주세요:")
     if st.button("주제 설정") and topic:
         st.session_state.topic = topic
+        prompt = build_prompt(topic, [], [])
+        with st.spinner("초기 아이디어를 생성 중입니다..."):
+            output = generate_ideas(prompt)
+            if output:
+                for line in output.split("
+"):
+                    if line.strip():
+                        st.session_state.ideas.append({
+                            "text": line.strip(),
+                            "removed": False,
+                            "memo": "",
+                            "liked": False
+                        })
         st.rerun()
 else:
     st.subheader(f"🎯 주제: {st.session_state.topic}")
@@ -64,9 +77,7 @@ else:
         cols = st.columns([8, 1, 1])
         with cols[0]:
             st.markdown(f"**{i+1}.** {idea['text']}")
-            memo = st.text_area(f"메모_{i}", value=idea.get("memo", ""), label_visibility="collapsed")
-            st.session_state.ideas[st.session_state.ideas.index(idea)]["memo"] = memo
-        with cols[1]:
+                    with cols[1]:
             if st.button("🗑️", key=f"remove_{i}"):
                 idx = st.session_state.ideas.index(idea)
                 st.session_state.ideas[idx]["removed"] = True
