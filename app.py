@@ -64,8 +64,9 @@ else:
         cols = st.columns([8, 1, 1])
         with cols[0]:
             st.markdown(f"**{i+1}.** {idea['text']}")
-            , label_visibility="collapsed")
-                    with cols[1]:
+            memo = st.text_area(f"메모_{i}", value=idea.get("memo", ""), label_visibility="collapsed")
+            st.session_state.ideas[st.session_state.ideas.index(idea)]["memo"] = memo
+        with cols[1]:
             if st.button("🗑️", key=f"remove_{i}"):
                 idx = st.session_state.ideas.index(idea)
                 st.session_state.ideas[idx]["removed"] = True
