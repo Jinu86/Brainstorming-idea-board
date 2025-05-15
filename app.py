@@ -14,6 +14,7 @@ if "topic" not in st.session_state:
     st.session_state.topic = ""
     st.session_state.ideas = []  # 각 idea: {text: str, removed: bool, memo: str, liked: bool}
     st.session_state.generated = []
+    st.session_state.show_success = False
 
 # Gemini API 호출 함수
 def generate_ideas(prompt):
@@ -57,18 +58,25 @@ if not st.session_state.topic:
         with st.spinner("초기 아이디어를 생성 중입니다..."):
             output = generate_ideas(prompt)
             if output:
+                new_ideas = []
                 for line in output.split("\n"):
                     if line.strip():
-                        st.session_state.ideas.append({
+                        new_ideas.append({
                             "text": line.strip(),
                             "removed": False,
                             "memo": "",
                             "liked": False
                         })
-                st.success("✅ 새로운 아이디어가 추가되었습니다!")
+                st.session_state.ideas.extend(new_ideas)
+                st.session_state.show_success = True
                 st.rerun()
 else:
     st.subheader(f"🎯 주제: {st.session_state.topic}")
+
+    # 성공 메시지 표시
+    if st.session_state.show_success:
+        st.success("✅ 새로운 아이디어가 추가되었습니다!")
+        st.session_state.show_success = False
 
     # 2. 아이디어 출력 및 상호작용
     st.markdown("---")
@@ -95,15 +103,17 @@ else:
         with st.spinner("새로운 아이디어를 생성 중입니다..."):
             output = generate_ideas(prompt)
             if output:
+                new_ideas = []
                 for line in output.split("\n"):
                     if line.strip():
-                        st.session_state.ideas.append({
+                        new_ideas.append({
                             "text": line.strip(),
                             "removed": False,
                             "memo": "",
                             "liked": False
                         })
-                st.success("✅ 새로운 아이디어가 추가되었습니다!")
+                st.session_state.ideas.extend(new_ideas)
+                st.session_state.show_success = True
                 st.rerun()
 
     # 4. 초기화 버튼
@@ -111,4 +121,5 @@ else:
         st.session_state.topic = ""
         st.session_state.ideas = []
         st.session_state.generated = []
+        st.session_state.show_success = False
         st.rerun()
