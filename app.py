@@ -1,9 +1,11 @@
 import streamlit as st
 import google.generativeai as genai
+import os
+from dotenv import load_dotenv
 
-# Streamlit Cloud에서는 .env 대신 secrets 사용
-api_key = st.secrets["GOOGLE_API_KEY"]
-genai.configure(api_key=api_key)
+# 환경 변수 로드
+load_dotenv()
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
 # 페이지 설정
 st.set_page_config(page_title="🧠 브레인스토밍 보드", layout="wide")
@@ -18,7 +20,7 @@ if "topic" not in st.session_state:
 # Gemini API 호출 함수
 def generate_ideas(prompt):
     try:
-        model = genai.GenerativeModel("models/gemini-1.5-pro")
+        model = genai.GenerativeModel("gemini-pro")
         response = model.generate_content(prompt)
         return response.text
     except Exception as e:
@@ -53,7 +55,7 @@ if not st.session_state.topic:
     topic = st.text_input("아이디어를 생각하고 싶은 주제를 입력해주세요:")
     if st.button("주제 설정") and topic:
         st.session_state.topic = topic
-        st.experimental_rerun()
+        st.rerun()
 else:
     st.subheader(f"🎯 주제: {st.session_state.topic}")
 
@@ -95,4 +97,4 @@ else:
         st.session_state.topic = ""
         st.session_state.ideas = []
         st.session_state.generated = []
-        st.experimental_rerun()
+        st.rerun()
